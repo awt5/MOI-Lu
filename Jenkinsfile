@@ -12,6 +12,11 @@ pipeline {
                 sh 'echo "Running Tests"'
             }
         }
+        stage('Publish Artifact') {
+            steps {
+                sh 'echo $?'
+            }
+        }
         stage('Deploy') {
             parallel {
               stage('DeployToDevEnv') {
