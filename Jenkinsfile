@@ -10,6 +10,9 @@ pipeline {
             steps {
                 sh 'echo "Running Tests"'
             }
+            steps {
+                sh 'echo "Running more Tests"'
+            }
         }
     }
 }
