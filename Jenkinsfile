@@ -5,6 +5,7 @@ pipeline {
             steps {
                 sh 'echo "Start Building app"'
                 sh 'echo "Continue building"'
+                sh './gradlew clean assemble'
             }
         }
         stage('Unit Test') {
