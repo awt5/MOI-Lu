@@ -37,7 +37,7 @@ pipeline {
     }
     post {
         always {
-            mail to: "${EMAIL_ME},
+            mail to: "${EMAIL_ME}",
                  subject: "${currentBuild.currentResult} Pipeline: ${currentBuild.fullDisplayName}",
                  body: "The pipeline ${env.BUILD_URL} has been executed."
         }
