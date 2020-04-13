@@ -32,10 +32,14 @@ pipeline {
             }
         }
     }
-    
+    environment {
+        EMAIL_ME = 'luceroqpdb@gmail.com'
+    }
     post {
         always {
-            emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
+            mail to: "${EMAIL_ME},
+                 subject: "${currentBuild.currentResult} Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "The pipeline ${env.BUILD_URL} has been executed."
         }
     }
 }
