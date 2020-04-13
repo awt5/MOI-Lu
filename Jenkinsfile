@@ -41,5 +41,16 @@ pipeline {
                  subject: "${currentBuild.currentResult} Pipeline: ${currentBuild.fullDisplayName}",
                  body: "The pipeline ${env.BUILD_URL} has been executed."
         }
+        
+        failure {
+            mail to: "${EMAIL_ME}",
+                 subject: "${currentBuild.currentResult} Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "Something is wrong with ${env.BUILD_URL}"
+        }
+        success {
+            mail to: "${EMAIL_ME}", 
+                 subject: "${currentBuild.currentResult} Pipeline: ${env.JOB_NAME}${env.BUILD_NUMBER}",
+                 body: "The pipeline ${env.BUILD_URL} has been well executed"
+        }
     }
 }
