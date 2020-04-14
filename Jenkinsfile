@@ -40,7 +40,7 @@ pipeline {
             emailext to: "${EMAIL_ME}",
                  body: "${DEFAULT_CONTENT}",
                  recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                 subject: "${DEFAULT_SUBJECT}"
+                 subject: '${DEFAULT_SUBJECT}'
         }
     }
 }
