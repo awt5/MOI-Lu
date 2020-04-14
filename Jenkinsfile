@@ -40,7 +40,7 @@ pipeline {
             emailext to: "${EMAIL_ME}",
                  body: "${env.DEFAULT_CONTENT}",
                  recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                 subject: "${env.PROJECT_NAME} -  - Build # {$env.BUILD_NUMBER} - ${env.BUILD_STATUS}!"
+                 subject: "Jenkins Build ${currentBuild.currentResult} # {$env.BUILD_NUMBER}: Job ${env.JOB_NAME}!"
         }
     }
 }
