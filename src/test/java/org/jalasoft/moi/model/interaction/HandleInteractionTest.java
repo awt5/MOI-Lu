@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -51,7 +52,7 @@ public class HandleInteractionTest {
         params.setFilesPath(path);
 
         Result result = builder.createExecution(params);
-        assertEquals(expected, result.getValue());
+        assertTrue(result.getValue().contains(expected));
 
         List<String> numbers = new ArrayList<>();
         numbers.add("4");
@@ -96,11 +97,11 @@ public class HandleInteractionTest {
     private static Stream<Arguments> codeProvider() {
         return Stream.of(
                 arguments(
-                        ".\\thirdparty\\python\\local\\SumInputsTest.py",
+                        ".\\thirdparty\\python\\local",
                         Language.PYTHON_32
                 ),
                 arguments(
-                        ".\\thirdparty\\java\\local\\SumInputsTest.java",
+                        ".\\thirdparty\\java\\local",
                         Language.JAVA
                 )
         );

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -50,7 +51,7 @@ public class SingleInputTest {
         params.setFilesPath(path);
 
         Result result = builder.createExecution(params);
-        assertEquals(expected, result.getValue());
+        assertTrue(result.getValue().contains(expected));
 
         map.put(result.getPid(), "100");
     }
@@ -73,7 +74,7 @@ public class SingleInputTest {
     static Stream<Arguments> codeProvider() {
         return Stream.of(
                 arguments(
-                        Constant.ROOTPATH.getValue() + "\\thirdparty\\python\\local\\AskInputTest.py",
+                        Constant.ROOTPATH.getValue() + "\\thirdparty\\python\\local\\askNumber",
                         Language.PYTHON_32
                 )
         );
