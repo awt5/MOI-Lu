@@ -33,24 +33,13 @@ pipeline {
         }
     }
     environment {
-        EMAIL_ME = 'luceroqpdb@gmail.com'
+        EMAIL_ME = 'coki.gray@gmail.com'
     }
     post {
         always {
             mail to: "${EMAIL_ME}",
-                 subject: "${currentBuild.currentResult} Pipeline: ${currentBuild.fullDisplayName}",
+                 subject: "Jenkins Build MOI - ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
                  body: "The pipeline ${env.BUILD_URL} has been executed."
-        }
-        
-        failure {
-            mail to: "${EMAIL_ME}",
-                 subject: "${currentBuild.currentResult} Pipeline: ${currentBuild.fullDisplayName}",
-                 body: "Something is wrong with ${env.BUILD_URL}"
-        }
-        success {
-            mail to: "${EMAIL_ME}", 
-                 subject: "${currentBuild.currentResult} Pipeline: ${env.JOB_NAME}${env.BUILD_NUMBER}",
-                 body: "The pipeline ${env.BUILD_URL} has been well executed"
         }
     }
 }
