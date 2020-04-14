@@ -37,9 +37,10 @@ pipeline {
     }
     post {
         always {
-            mail to: "${EMAIL_ME}",
-                 subject: "Jenkins Build MOI - ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
-                 body: "The pipeline ${env.BUILD_URL} has been executed."
+            emailext to: "${EMAIL_ME}",
+                 subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
+                 body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                 recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
     }
 }
