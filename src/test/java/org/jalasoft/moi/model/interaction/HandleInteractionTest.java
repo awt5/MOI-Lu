@@ -9,6 +9,7 @@ import org.jalasoft.moi.model.exceptions.CommandBuildException;
 import org.jalasoft.moi.model.exceptions.InputParametersException;
 import org.jalasoft.moi.model.exceptions.ProcessIDException;
 import org.jalasoft.moi.model.exceptions.ResultException;
+import org.jalasoft.moi.model.utils.Constant;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -45,7 +46,7 @@ public class HandleInteractionTest {
     @MethodSource("codeProvider")
     @Order(1)
     public void executeProcessForTwoDigitsSumTest(Path path, Language language) throws ResultException, CommandBuildException, ProcessIDException {
-        String expected = "Insert number1\r\n> ";
+        String expected = "Insert number1";
 
         Params params = new Params();
         params.setLanguage(language);
@@ -67,7 +68,7 @@ public class HandleInteractionTest {
     @MethodSource("pidProvider")
     @Order(2)
     public void firstInsertDataToExecutedProcessTest(Long pid) throws InputParametersException, ResultException {
-        String expected = "Insert number2\r\n> ";
+        String expected = "Insert number2";
         String number1 = map.get(pid).get(0);
 
         InputParameters input = new Answer();
@@ -75,7 +76,7 @@ public class HandleInteractionTest {
         input.setValue(number1);
 
         Result result = builder.buildResultWithInput(input);
-        assertEquals(expected, result.getValue());
+        assertTrue(result.getValue().contains(expected));
     }
 
     @ParameterizedTest
@@ -84,24 +85,24 @@ public class HandleInteractionTest {
     public void secondInsertDataToExecutedProcessTest(Long pid) throws InputParametersException, ResultException {
         String number2 = map.get(pid).get(1);
         String sum = map.get(pid).get(2);
-        String expected = "Sum: " + sum + "\r\n";
+        String expected = "Sum: " + sum;
 
         InputParameters input = new Answer();
         input.setProcessPid(pid);
         input.setValue(number2);
 
         Result result = builder.buildResultWithInput(input);
-        assertEquals(expected, result.getValue());
+        assertTrue(result.getValue().contains(expected));
     }
 
     private static Stream<Arguments> codeProvider() {
         return Stream.of(
                 arguments(
-                        ".\\thirdparty\\python\\local",
+                        Constant.ROOTPATH.getValue() + "/thirdparty/python/local",
                         Language.PYTHON_32
                 ),
                 arguments(
-                        ".\\thirdparty\\java\\local",
+                        Constant.ROOTPATH.getValue() + "/thirdparty/java/local",
                         Language.JAVA
                 )
         );
