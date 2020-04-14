@@ -3,18 +3,12 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'echo "Start Building app"'
-                sh 'echo "Continue building"'
+                sh './gradlew build'
             }
         }
-        stage('Unit Test') {
+        stage('Sonarqube') {
             steps {
-                sh 'echo "Running Tests"'
-            }
-        }
-        stage('Publish Artifact') {
-            steps {
-                sh 'echo $?'
+                sh './gradlew sonarqube'
             }
         }
         stage('Deploy') {
@@ -33,12 +27,11 @@ pipeline {
         }
     }
     environment {
-        EMAIL_ME = 'coki.gray@gmail.com'
+        EMAIL_ME = 'luceroqpdb@gmail.com'
     }
     post {
         always {
-            emailext to: "${EMAIL_ME}",
-                 body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n Pipeline: ${env.BUILD_URL} has been well executed",
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n Pipeline: ${env.BUILD_URL} has been well executed",
                  recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
                  subject: "Jenkins Build ${currentBuild.currentResult} # {$env.BUILD_NUMBER}: Job ${env.JOB_NAME}!"
         }
