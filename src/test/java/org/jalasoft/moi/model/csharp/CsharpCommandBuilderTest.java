@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CsharpCommandBuilderTest {
 
-    @Test
+   /* @Test
     public void cSharpCmdBuilderTest() {
         //given
         Parameters codeParams = getParams(".\\temp\\cplusplus\\test");
@@ -40,5 +40,5 @@ public class CsharpCommandBuilderTest {
         params.setFilesPath(Paths.get(paramTest));
         params.setLanguage(Language.CSHARP);
         return params;
-    }
+    }*/
 }
