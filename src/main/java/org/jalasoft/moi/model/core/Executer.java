@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
@@ -56,7 +57,7 @@ public class Executer {
      * @throws ProcessIDException
      */
     public Result execute(String command) throws CommandBuildException, ResultException, ProcessIDException {
-        ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "\"" + command + "\"");
+        ProcessBuilder builder = new ProcessBuilder("sh", "-c", command);
         builder.redirectErrorStream(true);
         Process process;
         long pid;
@@ -68,8 +69,8 @@ public class Executer {
             throw new CommandBuildException(e);
         }
         try {
-            pid = getPid(process.toString());
-        } catch (StringIndexOutOfBoundsException e) {
+            pid = getPid(process);
+        } catch (StringIndexOutOfBoundsException | NoSuchFieldException | IllegalAccessException e) {
             LOGGER.error(e.getMessage());
             throw new ProcessIDException(e);
         }
@@ -146,13 +147,14 @@ public class Executer {
     /**
      * Obtains the process id as long.
      *
-     * @param processName process name
+     * @param process object
      * @return a process id
      */
-    private Long getPid(String processName) {
-        return Long.parseLong(
-                processName.substring(
-                        processName.indexOf("=") + 1, processName.indexOf(",")
-                ));
+    private Long getPid(Process process) throws NoSuchFieldException, IllegalAccessException {
+        Field f = process.getClass().getDeclaredField("pid");
+        f.setAccessible(true);
+        Long result = f.getLong(process);
+        f.setAccessible(false);
+        return result;
     }
 }
