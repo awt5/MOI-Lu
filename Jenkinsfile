@@ -26,6 +26,7 @@ pipeline {
                 steps {
                   sh 'docker-compose stop'
                   sh 'docker-compose up --build'
+                  sh ''
                 }
               }
               stage('DeployToQAEnv') {

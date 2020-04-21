@@ -10,6 +10,7 @@ services:
       - "33061:3306"
   web:
     build: .
+    image: "lucerodocker/moi"
     ports:
       - "9091:9091"
     depends_on:
