@@ -1,8 +1,4 @@
 pipeline {
-    environment {
-        registry = ""
-    }
-
     agent any
     stages {
         stage('Build') {
@@ -26,7 +22,6 @@ pipeline {
                 steps {
                   sh 'docker-compose stop'
                   sh 'docker-compose up --build'
-                  sh ''
                 }
               }
               stage('DeployToQAEnv') {
