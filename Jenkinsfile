@@ -31,7 +31,10 @@ pipeline {
               }
             }
         }
-        stage('Publish Binaries') {
+        stage('Publish Artifactory') {
+            when {
+                branch 'develop'
+            }
             steps{
                 sh './gradlew artifactoryPublish'
             }
