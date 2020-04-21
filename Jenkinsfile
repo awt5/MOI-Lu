@@ -20,8 +20,8 @@ pipeline {
             parallel {
               stage('DeployToDevEnv') {
                 steps {
-                  sh 'docker-compose stop'
-                  sh 'docker-compose up --build'
+                  sh 'docker-compose down'
+                  sh 'docker-compose up -d --build'
                 }
               }
               stage('DeployToQAEnv') {
