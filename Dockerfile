@@ -1,12 +1,8 @@
 # Dockerfile
-FROM ub_python_java:1.0
+FROM lucerodocker/ubuntu-plus:ub18.04-opjdk8-py3
 
 # Copy data
-RUN mkdir /home/MOI/;
-COPY ./build/libs/MOI-1.0-SNAPSHOT.jar /home/MOI/
+WORKDIR /home/MOI/
+COPY ./build/libs/MOI-1.0-SNAPSHOT.jar .
 
-WORKDIR /home/MOI/;
-
-ENTRYPOINT ["java"]
-
-CMD ["-jar", "MOI-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "MOI-1.0-SNAPSHOT.jar"]

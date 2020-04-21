@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+        registry = ""
+    }
+
     agent any
     stages {
         stage('Build') {
@@ -20,7 +24,8 @@ pipeline {
             parallel {
               stage('DeployToDevEnv') {
                 steps {
-                  sh 'echo "Deploying to Dev Enviroment"'
+                  sh 'docker-compose stop'
+                  sh 'docker-compose up --build'
                 }
               }
               stage('DeployToQAEnv') {

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:33061/mysql
+    url: jdbc:mysql://moi-database:3306/database?useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: root
     initialization-mode: always
