@@ -83,9 +83,9 @@ pipeline {
                 sh 'echo "Deploying to develop"'
                 sh 'cp docker-compose-go.yml $DEV_DIR'
                 sh 'cd $DEV_DIR'
-                sh 'ls'
+                sh 'ls $DEV_DIR'
                 sh 'docker-compose down'
-                sh 'docker-compose -f docker-compose-go.yml up -d --build'
+                sh 'docker-compose -f $DEV_DIR/docker-compose-go.yml up -d --build'
             }
         }
 
