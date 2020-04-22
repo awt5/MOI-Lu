@@ -20,7 +20,7 @@ pipeline {
             steps {
               sh 'echo "Building a new image"'
               sh 'docker-compose down'
-              sh 'docker-compose up build'
+              sh 'docker-compose build'
 
               sh 'echo "Publish to Docker Hub"'
               sh 'docker login -u lucerodocker -p lucerodocker'
