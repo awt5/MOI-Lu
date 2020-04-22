@@ -41,6 +41,7 @@ pipeline {
 
         stage('Publish to Docker Hub') {
             steps{
+                sh 'docker login -u lucerodocker -p lucerodocker'
                 sh 'docker-compose push'
             }
         }
