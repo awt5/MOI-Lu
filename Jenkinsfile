@@ -1,21 +1,23 @@
 pipeline {
     agent any
     stages {
-        stages {
-            stage('Build Realise') {
-                when {
-                    branch 'master'
+        stage('Build') {
+            stages {
+                stage('Build Realise') {
+                    when {
+                        branch 'master'
+                    }
+                    steps {
+                        sh './gradlew clean build -Pcurrent_version=1.0'
+                    }
                 }
-                steps {
-                    sh './gradlew clean build -Pcurrent_version=1.0'
-                }
-            }
-            stage('Build daily') {
-                when {
-                    not { branch 'master' }
-                }
-                steps {
-                    sh './gradlew clean build'
+                stage('Build daily') {
+                    when {
+                        not { branch 'master' }
+                    }
+                    steps {
+                        sh './gradlew clean build'
+                    }
                 }
             }
         }
@@ -32,21 +34,23 @@ pipeline {
             }
         }
 
-        stages {
-            stage('Publish when Realise') {
-                when {
-                    branch 'master'
+        stage('Publish Artifactories') {
+            stages {
+                stage('Publish when Realise') {
+                    when {
+                        branch 'master'
+                    }
+                    steps{
+                        sh './gradlew -PcurrentVersion=1.0 artifactoryPublish -Partifactory_repokey=libs-release-local'
+                    }
                 }
-                steps{
-                    sh './gradlew -PcurrentVersion=1.0 artifactoryPublish -Partifactory_repokey=libs-release-local'
-                }
-            }
-            stage('Publish daily') {
-                when {
-                    not { branch 'master' }
-                }
-                steps{
-                    sh './gradlew artifactoryPublish'
+                stage('Publish daily') {
+                    when {
+                        not { branch 'master' }
+                    }
+                    steps{
+                        sh './gradlew artifactoryPublish'
+                    }
                 }
             }
         }
