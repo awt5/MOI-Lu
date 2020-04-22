@@ -98,7 +98,7 @@ pipeline {
                 sh 'cp docker-compose-go.yml $QA_DIR'
                 sh 'cd $QA_DIR'
                 sh 'docker-compose down'
-                sh 'docker-compose -f docker-compose-go.yml up -d --build'
+                sh 'docker-compose -f $QA_DIR/docker-compose-go.yml up -d --build'
             }
         }
 
