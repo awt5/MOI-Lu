@@ -16,22 +16,35 @@ pipeline {
                 sh './gradlew sonarqube'
             }
         }
-        stage('Deploy') {
+        stage('Deploy To DevEnv') {
+            steps {
+              sh 'echo "Deploying to Develop Environment"'
+              sh 'docker-compose down'
+              sh 'docker-compose up -d --build'
+            }
+        }
+
+        stage('Deploy to Client') {
             parallel {
-              stage('DeployToDevEnv') {
+              stage('Deploy To Stage Area') {
                 steps {
-                  sh 'whoami'
-                  sh 'docker-compose down'
-                  sh 'docker-compose up -d --build'
+                  sh 'echo "Deploying to Stage"'
                 }
               }
-              stage('DeployToQAEnv') {
+              stage('Deploy To Boss son') {
                 steps {
-                  sh 'echo "Deploying to QA Enviroment"'
+                  sh 'echo "Deploying to Boss son"'
                 }
               }
             }
         }
+
+        stage('Publish to Docker Hub') {
+            steps{
+                sh 'docker-compose push'
+            }
+        }
+
         stage('Publish Artifactory') {
             when {
                 branch 'develop'
