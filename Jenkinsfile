@@ -82,7 +82,6 @@ pipeline {
             steps {
                 sh 'echo "Deploying to develop"'
                 sh 'cp docker-compose-go.yml $DEV_DIR'
-                sh 'cd $DEV_DIR'
                 sh 'ls $DEV_DIR'
                 sh 'docker-compose down'
                 sh 'docker-compose -f $DEV_DIR/docker-compose-go.yml up -d --build'
@@ -96,7 +95,7 @@ pipeline {
             steps {
                 sh 'echo "Deploying to QA"'
                 sh 'cp docker-compose-go.yml $QA_DIR'
-                sh 'cd $QA_DIR'
+                sh 'ls $QA_DIR'
                 sh 'docker-compose down'
                 sh 'docker-compose -f $QA_DIR/docker-compose-go.yml up -d --build'
             }
