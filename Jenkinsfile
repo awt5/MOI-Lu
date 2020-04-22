@@ -20,6 +20,7 @@ pipeline {
             parallel {
               stage('DeployToDevEnv') {
                 steps {
+                  sh 'whoami'
                   sh 'docker-compose down'
                   sh 'docker-compose up -d --build'
                 }
