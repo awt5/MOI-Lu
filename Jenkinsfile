@@ -30,13 +30,12 @@ pipeline {
 
         stage('Deploy to Develop') {
             environment {
-                DEV_HOME = '/deployments/dev'
+                DEV_DIR = './deployments/dev'
             }
             steps {
-                sh 'mkdir $DEV_HOME'
-                sh 'cp docker-compose-go.yml $DEV_HOME'
-                sh 'cp dev.env $DEV_HOME/.env'
-                sh 'cd $DEV_HOME'
+                sh 'cp docker-compose-go.yml $DEV_DIR'
+                sh 'cp dev.env $DEV_DIR/.env'
+                sh 'cd $DEV_DIR'
                 sh 'docker-compose down'
                 sh 'docker-compose -f docker-compose-go.yml up -d --build'
             }

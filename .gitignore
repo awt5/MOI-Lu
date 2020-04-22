@@ -1,7 +1,8 @@
 
 # Created by https://www.gitignore.io/api/git,java,gradle,intellij
 # Edit at https://www.gitignore.io/?templates=git,java,gradle,intellij
-
+### Direntories ###
+deployments
 ### Git ###
 # Created by git for backups. To disable backups in Git:
 # $ git config --global mergetool.keepBackup false
