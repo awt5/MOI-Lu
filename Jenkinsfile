@@ -2,7 +2,7 @@ pipeline {
     agent any
     stages {
         stage('Build') {
-            stages {
+            parallel {
                 stage('Build Realise') {
                     when {
                         branch 'master'
@@ -22,8 +22,9 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Tests') {
             steps {
+                sh 'Running tests'
                 sh './gradlew jacocoTestReport'
             }
         }
@@ -34,14 +35,15 @@ pipeline {
             }
         }
 
-        stage('Publish Artifactories') {
-            stages {
+        stage('Publish Artifacts') {
+            parallel {
                 stage('Publish when Realise') {
                     when {
                         branch 'master'
                     }
                     steps{
-                        sh './gradlew -PcurrentVersion=1.0 artifactoryPublish -Partifactory_repokey=libs-release-local'
+                        sh 'echo "Publish to artifactory"'
+                        sh './gradlew -PcurrentVersion=1.0 -Partifactory_repokey=libs-release-local artifactoryPublish'
                     }
                 }
                 stage('Publish daily') {
@@ -49,8 +51,14 @@ pipeline {
                         not { branch 'master' }
                     }
                     steps{
+                        sh 'echo "Publish to artifactory"'
                         sh './gradlew artifactoryPublish'
                     }
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
                 }
             }
         }
@@ -72,6 +80,7 @@ pipeline {
                 DEV_DIR = './deployments/dev'
             }
             steps {
+                sh 'echo "Deploying to develop"'
                 sh 'cp docker-compose-go.yml $DEV_DIR'
                 sh 'cd $DEV_DIR'
                 sh 'docker-compose down'
@@ -84,6 +93,7 @@ pipeline {
                 QA_DIR = './deployments/qa'
             }
             steps {
+                sh 'echo "Deploying to QA"'
                 sh 'cp docker-compose-go.yml $QA_DIR'
                 sh 'cd $QA_DIR'
                 sh 'docker-compose down'
@@ -100,9 +110,6 @@ pipeline {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n Pipeline: ${env.BUILD_URL} has been well executed",
                  recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
                  subject: "Jenkins Build ${currentBuild.currentResult} # {$env.BUILD_NUMBER}: Job ${env.JOB_NAME}!"
-        }
-        success {
-            archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
         }
     }
 }

@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: database
     ports:
-      - "${DB_PORT:-33062}:3306"
+      - "${DB_PORT:-33061}:3306"
   web:
     build: .
     image: "lucerodocker/moi"
