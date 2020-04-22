@@ -9,10 +9,9 @@ services:
     ports:
       - "${DB_PORT:-33062}:3306"
   web:
-    build: .
     image: "lucerodocker/moi"
     ports:
-      - "${WEB_PORT:-9091}:9091"
+      - "${WEB_PORT:-9092}:9091"
     depends_on:
       - moi-database
     restart: on-failure

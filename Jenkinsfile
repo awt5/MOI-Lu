@@ -16,11 +16,29 @@ pipeline {
                 sh './gradlew sonarqube'
             }
         }
-        stage('Deploy To DevEnv') {
+        stage('Publish to Docker Hub') {
             steps {
-              sh 'echo "Deploying to Develop Environment"'
+              sh 'echo "Building a new image"'
               sh 'docker-compose down'
-              sh 'docker-compose up -d --build'
+              sh 'docker-compose up build'
+
+              sh 'echo "Publish to Docker Hub"'
+              sh 'docker login -u lucerodocker -p lucerodocker'
+              sh 'docker-compose push'
+            }
+        }
+
+        stage('Deploy to Develop') {
+            environment {
+                DEV_HOME = '/deployments/dev'
+            }
+            steps {
+                sh 'mkdir $DEV_HOME'
+                sh 'cp docker-compose-go.yml $DEV_HOME'
+                sh 'cp dev.env $DEV_HOME/.env'
+                sh 'cd $DEV_HOME'
+                sh 'docker-compose down'
+                sh 'docker-compose -f docker-compose-go.yml up -d --build'
             }
         }
 
@@ -36,13 +54,6 @@ pipeline {
                   sh 'echo "Deploying to Boss son"'
                 }
               }
-            }
-        }
-
-        stage('Publish to Docker Hub') {
-            steps{
-                sh 'docker login -u lucerodocker -p lucerodocker'
-                sh 'docker-compose push'
             }
         }
 
