@@ -20,7 +20,6 @@ pipeline {
             parallel {
               stage('DeployToDevEnv') {
                 steps {
-                  sh 'cat /var/lib/jenkins/dockerHubPass.txt | docker login --username lucerodocker --password-stdin'
                   sh 'docker-compose down'
                   sh 'docker-compose up -d --build'
                 }
