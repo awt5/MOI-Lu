@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stages('Build') {
+        stages {
             stage('Build Realise') {
                 when {
                     branch 'master'
@@ -10,7 +10,7 @@ pipeline {
                     sh './gradlew clean build -Pcurrent_version=1.0'
                 }
             }
-            stage('Build') {
+            stage('Build daily') {
                 when {
                     not { branch 'master' }
                 }
@@ -32,7 +32,7 @@ pipeline {
             }
         }
 
-        stages('Publish Artifactories') {
+        stages {
             stage('Publish when Realise') {
                 when {
                     branch 'master'
@@ -41,7 +41,7 @@ pipeline {
                     sh './gradlew -PcurrentVersion=1.0 artifactoryPublish -Partifactory_repokey=libs-release-local'
                 }
             }
-            stage('Publish when develop') {
+            stage('Publish daily') {
                 when {
                     not { branch 'master' }
                 }
