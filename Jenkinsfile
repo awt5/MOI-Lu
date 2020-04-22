@@ -83,6 +83,7 @@ pipeline {
                 sh 'echo "Deploying to develop"'
                 sh 'cp docker-compose-go.yml $DEV_DIR'
                 sh 'cd $DEV_DIR'
+                sh 'ls'
                 sh 'docker-compose down'
                 sh 'docker-compose -f docker-compose-go.yml up -d --build'
             }
@@ -98,6 +99,12 @@ pipeline {
                 sh 'cd $QA_DIR'
                 sh 'docker-compose down'
                 sh 'docker-compose -f docker-compose-go.yml up -d --build'
+            }
+        }
+
+        stage('Clean WorkSpace') {
+            steps {
+                sh 'docker image prune -a'
             }
         }
     }
