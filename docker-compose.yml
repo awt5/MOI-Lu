@@ -1,0 +1,18 @@
+version: '3'
+services:
+  moi-database:
+    image: "mysql:5.7"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+    ports:
+      - "33061:3306"
+  web:
+    build: .
+    image: "lucerodocker/moi"
+    ports:
+      - "9091:9091"
+    depends_on:
+      - moi-database
+    restart: on-failure

@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh './gradlew build'
+                sh './gradlew clean build'
             }
         }
         stage('Test') {
@@ -16,21 +16,40 @@ pipeline {
                 sh './gradlew sonarqube'
             }
         }
-        stage('Deploy') {
+        stage('Deploy To DevEnv') {
+            steps {
+              sh 'echo "Deploying to Develop Environment"'
+              sh 'docker-compose down'
+              sh 'docker-compose up -d --build'
+            }
+        }
+
+        stage('Deploy to Client') {
             parallel {
-              stage('DeployToDevEnv') {
+              stage('Deploy To Stage Area') {
                 steps {
-                  sh 'echo "Deploying to Dev Enviroment"'
+                  sh 'echo "Deploying to Stage"'
                 }
               }
-              stage('DeployToQAEnv') {
+              stage('Deploy To Boss son') {
                 steps {
-                  sh 'echo "Deploying to QA Enviroment"'
+                  sh 'echo "Deploying to Boss son"'
                 }
               }
             }
         }
-        stage('Publish Binaries') {
+
+        stage('Publish to Docker Hub') {
+            steps{
+                sh 'docker login -u lucerodocker -p lucerodocker'
+                sh 'docker-compose push'
+            }
+        }
+
+        stage('Publish Artifactory') {
+            when {
+                branch 'develop'
+            }
             steps{
                 sh './gradlew artifactoryPublish'
             }
