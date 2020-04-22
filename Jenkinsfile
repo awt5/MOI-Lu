@@ -1,21 +1,56 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
-            steps {
-                sh './gradlew clean build'
+        stages('Build') {
+            stage('Build Realise') {
+                when {
+                    branch 'master'
+                }
+                steps {
+                    sh './gradlew clean build -Pcurrent_version=1.0'
+                }
+            }
+            stage('Build') {
+                when {
+                    not { branch 'master' }
+                }
+                steps {
+                    sh './gradlew clean build'
+                }
             }
         }
+
         stage('Test') {
             steps {
                 sh './gradlew jacocoTestReport'
             }
         }
+
         stage('Sonarqube') {
             steps {
                 sh './gradlew sonarqube'
             }
         }
+
+        stages('Publish Artifactories') {
+            stage('Publish when Realise') {
+                when {
+                    branch 'master'
+                }
+                steps{
+                    sh './gradlew -PcurrentVersion=1.0 artifactoryPublish -Partifactory_repokey=libs-release-local'
+                }
+            }
+            stage('Publish when develop') {
+                when {
+                    not { branch 'master' }
+                }
+                steps{
+                    sh './gradlew artifactoryPublish'
+                }
+            }
+        }
+
         stage('Publish to Docker Hub') {
             steps {
               sh 'echo "Building a new image"'
@@ -49,15 +84,6 @@ pipeline {
                 sh 'cd $QA_DIR'
                 sh 'docker-compose down'
                 sh 'docker-compose -f docker-compose-go.yml up -d --build'
-            }
-        }
-
-        stage('Publish Artifactory') {
-            when {
-                branch 'develop'
-            }
-            steps{
-                sh './gradlew artifactoryPublish'
             }
         }
     }
