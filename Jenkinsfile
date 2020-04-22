@@ -24,7 +24,7 @@ pipeline {
 
         stage('Tests') {
             steps {
-                sh 'Running tests'
+                sh 'echo Running tests'
                 sh './gradlew jacocoTestReport'
             }
         }
