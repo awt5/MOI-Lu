@@ -34,7 +34,6 @@ pipeline {
             }
             steps {
                 sh 'cp docker-compose-go.yml $DEV_DIR'
-                sh 'cp dev.env $DEV_DIR/.env'
                 sh 'cd $DEV_DIR'
                 sh 'docker-compose down'
                 sh 'docker-compose -f docker-compose-go.yml up -d --build'
