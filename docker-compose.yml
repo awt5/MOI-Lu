@@ -3,7 +3,7 @@ services:
   moi-database:
     env_file:
       - variables.env
-    image: "${MSQL_TAG}:5.7"
+    image: "mysql:${MSQL_TAG}"
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
