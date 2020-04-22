@@ -1,6 +1,8 @@
 version: '3'
 services:
   moi-database:
+    env_file:
+      - variables.env
     image: "${MSQL_TAG}:5.7"
     restart: always
     environment:
@@ -9,6 +11,8 @@ services:
     ports:
       - "${DB_PORT}:3306"
   web:
+    env_file:
+      - variables.env
     build: .
     image: "lucerodocker/moi"
     ports:
