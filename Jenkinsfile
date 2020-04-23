@@ -28,9 +28,9 @@ pipeline {
             }
         }
 
-        stage('Publish Artifacts') {
+        stage('PublishArtifacts') {
             stages {
-                stage('Publish Release') {
+                stage('Publish Release Artifacts') {
                     when {
                         anyOf {
                             branch 'master'
@@ -67,7 +67,7 @@ pipeline {
                 sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE up -d --build'
             }
         }
-        stage('Publish Artifacts') {
+        stage('PublishToDockerHub') {
             stages {
                 stage('Publish Latest') {
                     steps {
