@@ -131,9 +131,7 @@ pipeline {
         always {
             junit 'build/test-results/**/*.xml'
         }
-        aborted {
-            sh 'echo Aborted'
-        }
+
         failure {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
