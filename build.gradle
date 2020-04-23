@@ -16,13 +16,13 @@ plugins {
     id 'com.jfrog.artifactory' version '4.9.8'
 }
 
+apply plugin: "com.jfrog.artifactory"
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
-apply plugin: "com.jfrog.artifactory"
 
 group 'org.jalasoft.moi'
-version "${current_version}"
+version = gradle.properties.containsKey("release_version") ? "1.0-SNAPSHOT" : "${release_version}"
 
 sourceCompatibility = 1.8
 
@@ -90,7 +90,7 @@ artifactory {
     contextUrl = "${artifactory_contextUrl}"
     publish {
         repository {
-            repoKey = "${artifactory_repokey}"
+            repoKey = gradle.properties.containsKey("release_version") ? "libs-snapshot-local" : "libs-release-local"
             username = "${artifactory_user}"
             password = "${artifactory_password}"
         }

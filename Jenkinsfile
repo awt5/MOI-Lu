@@ -54,7 +54,7 @@ pipeline {
                     }
                     steps{
                         sh 'echo "Publish to artifactory when release"'
-                        sh './gradlew -PcurrentVersion=$BUILD_VERSION -Partifactory_repokey=libs-release-local artifactoryPublish'
+                        sh './gradlew -Prelease_version=$BUILD_VERSION artifactoryPublish'
                     }
                 }
                 stage('Publish SnapShot') {
