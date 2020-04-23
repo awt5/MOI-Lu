@@ -9,7 +9,7 @@ services:
     ports:
       - "${DB_PORT:-33061}:3306"
   web:
-    build: ../.
+    build: .
     image: "lucerodocker/moi:${IMG_TAG:-latest}"
     ports:
       - "${WEB_PORT:-9091}:9091"
