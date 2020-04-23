@@ -51,19 +51,22 @@ pipeline {
             }
         }
 
+        stage('PromoteToDevelop') {
+            environment {
+                DEV_DIR = '/deployments/dev'
+                DOC_COMPOSE = 'docker-compose.yml'
+            }
+            steps {
+                sh 'echo "Deploying to develop"'
+                sh 'cp $DOC_COMPOSE $DEV_DIR'
+                sh 'ls $DEV_DIR'
+                sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE down'
+                sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE up -d --build'
+            }
+        }
+
         stage('PublishToDockerHub') {
-            stages {
-                stage('Build Docker image') {
-                    steps {
-                        sh 'echo "Building a new image"'
-                        sh 'docker-compose down'
-                        sh 'docker-compose build'
-                    }
-                }
-                stage('Publish latest') {
-                    when {
-                        branch 'develop'
-                    }
+                stage('Publish Latest') {
                     steps {
                       sh 'echo "Publish to Docker Hub"'
                       sh 'docker login -u lucerodocker -p lucerodocker'
@@ -87,30 +90,23 @@ pipeline {
             }
         }
 
-        stage('PromoteToDevelop') {
-            environment {
-                DEV_DIR = '/deployments/dev'
-                DOC_COMPOSE = 'docker-compose-go.yml'
-            }
-            steps {
-                sh 'echo "Deploying to develop"'
-                sh 'cp $DOC_COMPOSE $DEV_DIR'
-                sh 'ls $DEV_DIR'
-                //sh 'docker-compose -f $DOC_COMPOSE down'
-                sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE up -d'
-            }
-        }
-
         stage('Deploy to QA') {
             environment {
-                QA_DIR = './deployments/qa'
+                QA_DIR = '/deployments/qa'
                 DOC_COMPOSE = 'docker-compose-go.yml'
+            }
+            when {
+                anyOf {
+                    branch 'master'
+                    branch pattern: "release*", comparator: "GLOB"
+                    branch 'develop'
+                }
             }
             steps {
                 sh 'echo "Deploying to QA"'
                 sh 'cp $DOC_COMPOSE $QA_DIR'
                 sh 'ls $QA_DIR'
-                //sh 'docker-compose down'
+                sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE down'
                 sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE up -d'
             }
         }
