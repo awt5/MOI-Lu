@@ -56,7 +56,7 @@ pipeline {
 
         stage('PromoteToDevelop') {
             environment {
-                DC_DIR = './docker/compose'
+                DC_DIR = 'docker/compose'
                 DOC_COMPOSE = 'docker-compose.yml'
             }
             steps {
@@ -95,7 +95,7 @@ pipeline {
         stage('Deploy to QA') {
             environment {
                 DOC_COMPOSE = 'docker-compose-go.yml'
-                DC_DIR = './docker/compose'
+                DC_DIR = 'docker/compose'
                 QA_DIR = '/deployments/qa'
                 ENV_DIR = 'env/qa.env'
             }
