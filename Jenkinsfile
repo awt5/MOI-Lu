@@ -56,15 +56,14 @@ pipeline {
 
         stage('PromoteToDevelop') {
             environment {
-                DEV_DIR = '/deployments/dev'
+                DC_DIR = './docker/compose'
                 DOC_COMPOSE = 'docker-compose.yml'
             }
             steps {
                 sh 'echo "Deploying to develop"'
-                sh 'cp $DOC_COMPOSE $DEV_DIR'
-                sh 'ls $DEV_DIR'
-                sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE down'
-                sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE up -d --build'
+                sh 'ls $DC_DIR'
+                sh 'docker-compose -f $DC_DIR/$DOC_COMPOSE down'
+                sh 'docker-compose -f $DC_DIR/$DOC_COMPOSE up -d --build'
             }
         }
         stage('PublishToDockerHub') {
@@ -96,6 +95,7 @@ pipeline {
         stage('Deploy to QA') {
             environment {
                 QA_DIR = '/deployments/qa'
+                DC_DIR = './docker/compose'
                 DOC_COMPOSE = 'docker-compose-go.yml'
             }
             when {
@@ -107,8 +107,9 @@ pipeline {
             }
             steps {
                 sh 'echo "Deploying to QA"'
-                sh 'cp $DOC_COMPOSE $QA_DIR'
-                sh 'ls $QA_DIR'
+                sh 'cp $DC_DIR/$DOC_COMPOSE $QA_DIR'
+                sh 'cp $DC_DIR/env/qa.env $QA_DIR'
+                sh 'ls -la $QA_DIR'
                 sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE down'
                 sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE up -d'
             }
