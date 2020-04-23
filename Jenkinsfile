@@ -34,6 +34,7 @@ pipeline {
             steps {
                 sh 'echo "Deploying to develop"'
                 sh 'docker-compose down'
+                sh 'docker stop $(docker ps -q)'
                 sh 'docker-compose up -d --build'
             }
         }
