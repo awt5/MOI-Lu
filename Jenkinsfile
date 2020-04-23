@@ -131,7 +131,7 @@ pipeline {
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
                      subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER: Job ${env.JOB_NAME}!"
                      from: "awt05devops@jenkins.com"
-                     to: "coki.cat@gmail.com"
+                     to: "coki.gray@gmail.com"
                      compressLog: true
         }
         fixed {
