@@ -4,6 +4,7 @@ pipeline {
     environment {
         EMAIL_ME = 'luceroqpdb@gmail.com'
         BUILD_VERSION = "1.0.$env.BUILD_NUMBER"
+        IMAGE_DOCKER = 'lucerodocker/moi'
     }
 
     stages {
@@ -80,8 +81,8 @@ pipeline {
                     steps {
                       sh 'echo "Publish to Docker Hub"'
                       sh 'docker login -u lucerodocker -p lucerodocker'
-                      sh 'docker tag moi:latest lucerodocker/moi:$BUILD_VERSION'
-                      sh 'docker-compose push'
+                      sh 'docker tag $IMAGE_DOCKER:latest $IMAGE_DOCKER:$BUILD_VERSION'
+                      sh 'docker push $IMAGE_DOCKER'
                     }
                 }
             }
@@ -126,12 +127,20 @@ pipeline {
             sh 'echo Aborted'
         }
         failure {
-            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n Pipeline: ${env.BUILD_URL} has been well executed",
-                 recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                 subject: "Jenkins Build ${currentBuild.currentResult} # {$env.BUILD_NUMBER}: Job ${env.JOB_NAME}!"
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
+                     recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                     subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER: Job ${env.JOB_NAME}!"
+                     from: "awt05devops@jenkins.com"
+                     to: "coki.cat@gmail.com"
+                     compressLog: true
         }
         fixed {
-            sh 'echo Fixed'
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
+                     recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                     subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER: Job ${env.JOB_NAME}!"
+                     from: "awt05devops@jenkins.com"
+                     to: "windyriey@gmail.com"
+                     attachLog: true
         }
     }
 }
