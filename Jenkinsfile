@@ -139,8 +139,8 @@ pipeline {
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
                      subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER",
                      attachmentsPattern: 'generatedFile.txt',
-                     attachLog: true
-                     to: "$EMAIL_TEAM",
+                     attachLog: true,
+                     to: "$EMAIL_TEAM"
         }
         fixed {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
