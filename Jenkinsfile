@@ -1,60 +1,12 @@
 pipeline {
     agent any
+    environment {
+        BUILD_VERSION = "1.0.$env.BUILD_NUMBER"
+    }
     stages {
         stage('Build') {
-            parallel {
-                stage('Build Realise') {
-                    when {
-                        branch 'master'
-                    }
-                    steps {
-                        sh './gradlew clean build -Pcurrent_version=1.0'
-                    }
-                }
-                stage('Build daily') {
-                    when {
-                        not { branch 'master' }
-                    }
-                    steps {
-                        sh './gradlew clean build'
-                    }
-                }
-            }
-        }
-
-        stage('Tests') {
             steps {
-                sh 'echo Running tests'
-                sh './gradlew jacocoTestReport'
-            }
-        }
-
-        stage('Sonarqube') {
-            steps {
-                sh './gradlew sonarqube'
-            }
-        }
-
-        stage('Publish Artifacts') {
-            parallel {
-                stage('Publish when Realise') {
-                    when {
-                        branch 'master'
-                    }
-                    steps{
-                        sh 'echo "Publish to artifactory"'
-                        sh './gradlew -PcurrentVersion=1.0 -Partifactory_repokey=libs-release-local artifactoryPublish'
-                    }
-                }
-                stage('Publish daily') {
-                    when {
-                        not { branch 'master' }
-                    }
-                    steps{
-                        sh 'echo "Publish to artifactory"'
-                        sh './gradlew artifactoryPublish'
-                    }
-                }
+                sh './gradlew clean build'
             }
             post {
                 success {
@@ -63,41 +15,103 @@ pipeline {
             }
         }
 
-        stage('Publish to Docker Hub') {
+        stage('Unit Tests and Analysis') {
             steps {
-              sh 'echo "Building a new image"'
-              sh 'docker-compose down'
-              sh 'docker-compose build'
+                sh 'echo "Running tests"'
+                sh './gradlew jacocoTestReport'
 
-              sh 'echo "Publish to Docker Hub"'
-              sh 'docker login -u lucerodocker -p lucerodocker'
-              sh 'docker-compose push'
+                sh 'echo "Analyzing Data"'
+                sh './gradlew sonarqube'
             }
         }
 
-        stage('Deploy to Develop') {
+        stage('Publish Artifacts') {
+            stages {
+                stage('Publish Release') {
+                    when {
+                        anyOf {
+                            branch 'master'
+                            branch pattern: "release*", comparator: "GLOB"
+                        }
+                    }
+                    steps{
+                        sh 'echo "Publish to artifactory when release"'
+                        sh './gradlew -PcurrentVersion=$BUILD_VERSION -Partifactory_repokey=libs-release-local artifactoryPublish'
+                    }
+                }
+                stage('Publish SnapShot') {
+                    when {
+                        branch 'develop'
+                    }
+                    steps{
+                        sh 'echo "Publish to artifactory when develop"'
+                        sh './gradlew artifactoryPublish'
+                    }
+                }
+            }
+        }
+
+        stage('PublishToDockerHub') {
+            stages {
+                stage('Build Docker image') {
+                    steps {
+                        sh 'echo "Building a new image"'
+                        sh 'docker-compose down'
+                        sh 'docker-compose build'
+                    }
+                }
+                stage('Publish latest') {
+                    when {
+                        branch 'develop'
+                    }
+                    steps {
+                      sh 'echo "Publish to Docker Hub"'
+                      sh 'docker login -u lucerodocker -p lucerodocker'
+                      sh 'docker-compose push'
+                    }
+                }
+                stage('Publish Release') {
+                    when {
+                        anyOf {
+                            branch 'master'
+                            branch pattern: "release*", comparator: "GLOB"
+                        }
+                    }
+                    steps {
+                      sh 'echo "Publish to Docker Hub"'
+                      sh 'docker login -u lucerodocker -p lucerodocker'
+                      sh 'docker tag moi:latest lucerodocker/moi:$BUILD_VERSION'
+                      sh 'docker-compose push'
+                    }
+                }
+            }
+        }
+
+        stage('PromoteToDevelop') {
             environment {
-                DEV_DIR = './deployments/dev'
+                DEV_DIR = '/deployments/dev'
+                DOC_COMPOSE = 'docker-compose-go.yml'
             }
             steps {
                 sh 'echo "Deploying to develop"'
-                sh 'cp docker-compose-go.yml $DEV_DIR'
+                sh 'cp $DOC_COMPOSE $DEV_DIR'
                 sh 'ls $DEV_DIR'
-                sh 'docker-compose down'
-                sh 'docker-compose -f $DEV_DIR/docker-compose-go.yml up -d --build'
+                //sh 'docker-compose -f $DOC_COMPOSE down'
+                sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE up -d'
             }
         }
 
         stage('Deploy to QA') {
             environment {
                 QA_DIR = './deployments/qa'
+                DOC_COMPOSE = 'docker-compose-go.yml'
             }
             steps {
                 sh 'echo "Deploying to QA"'
-                sh 'cp docker-compose-go.yml $QA_DIR'
+                sh 'cp $DOC_COMPOSE $QA_DIR'
                 sh 'ls $QA_DIR'
-                sh 'docker-compose down'
-                sh 'docker-compose -f $QA_DIR/docker-compose-go.yml up -d --build'
+                //sh 'docker-compose down'
+                sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE up -d'
             }
         }
 
@@ -111,11 +125,17 @@ pipeline {
         EMAIL_ME = 'luceroqpdb@gmail.com'
     }
     post {
-        failure {
+        always {
             junit 'build/test-results/**/*.xml'
+        }
+        aborted {
+        }
+        failure {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n Pipeline: ${env.BUILD_URL} has been well executed",
                  recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
                  subject: "Jenkins Build ${currentBuild.currentResult} # {$env.BUILD_NUMBER}: Job ${env.JOB_NAME}!"
+        }
+        fixed {
         }
     }
 }
