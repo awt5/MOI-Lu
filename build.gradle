@@ -1,11 +1,28 @@
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '2.2.5.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+    }
 }
 
+plugins {
+    id 'jacoco'
+    id 'java'
+    id 'org.sonarqube' version '2.8'
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'com.jfrog.artifactory' version '4.9.8'
+}
+
+apply plugin: "com.jfrog.artifactory"
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
 group 'org.jalasoft.moi'
-version '1.0-SNAPSHOT'
+version = gradle.properties.containsKey("release_version") ? "1.0-SNAPSHOT" : "${release_version}"
 
 sourceCompatibility = 1.8
 
@@ -38,6 +55,25 @@ dependencies {
     )
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "awt5_MOI-Lu"
+    property "sonar.organization", "awt5"
+    property "sonar.host.url", "https://sonarcloud.io"
+    property "sonar.login", "defc2da8600932919846a5be54011b7a65372214"
+    property "sonar.tests", "src/test"
+    property "sonar.junit.reportsPath", "build/test-results"
+    property "sonar.java.coveragePlugin", "jacoco"
+    property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+  }
+}
+
 test {
     useJUnitPlatform()
 }
@@ -48,4 +84,29 @@ bootJar {
 
 bootRun {
     main = 'org.jalasoft.moi.Main'
+}
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = gradle.properties.containsKey("release_version") ? "libs-snapshot-local" : "libs-release-local"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+        defaults {
+            publications('mavenJava')
+            publishArtifacts = true
+            properties = ['qa.level': 'basic', 'dev.team' : 'core']
+            publishPom = true
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }

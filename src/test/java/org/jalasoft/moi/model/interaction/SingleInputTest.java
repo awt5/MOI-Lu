@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -43,14 +44,14 @@ public class SingleInputTest {
     @MethodSource("codeProvider")
     @Order(1)
     public void askForNumberTest(Path path, Language language) throws ResultException, CommandBuildException, ProcessIDException {
-        String expected = "Insert number\r\n> ";
+        String expected = "Insert number";
 
         Params params = new Params();
         params.setLanguage(language);
         params.setFilesPath(path);
 
         Result result = builder.createExecution(params);
-        assertEquals(expected, result.getValue());
+        assertTrue(result.getValue().contains(expected));
 
         map.put(result.getPid(), "100");
     }
@@ -60,20 +61,20 @@ public class SingleInputTest {
     @Order(2)
     public void displayNumberInsertedTest(Long pid) throws InputParametersException, ResultException {
         String userInput = map.get(pid);
-        String expected = "your number is: " + userInput + "\r\n";
+        String expected = "your number is: " + userInput;
 
         InputParameters input = new Answer();
         input.setProcessPid(pid);
         input.setValue(userInput);
 
         Result result = builder.buildResultWithInput(input);
-        assertEquals(expected, result.getValue());
+        assertTrue(result.getValue().contains(expected));
     }
 
     static Stream<Arguments> codeProvider() {
         return Stream.of(
                 arguments(
-                        Constant.ROOTPATH.getValue() + "\\thirdparty\\python\\local\\AskInputTest.py",
+                        Constant.ROOTPATH.getValue() + "/thirdparty/python/local/askNumber",
                         Language.PYTHON_32
                 )
         );
