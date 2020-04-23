@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        EMAIL_ME = 'luceroqpdb@gmail.com'
+        EMAIL_ADMIN = 'luceroqpdb@gmail.com'
+        EMAIL_TEAM = 'windyriey@gmail.com, coki.gray@gmail.com'
         BUILD_VERSION = "1.0.$env.BUILD_NUMBER"
         IMAGE_DOCKER = 'lucerodocker/moi'
     }
@@ -136,16 +137,23 @@ pipeline {
         failure {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                     subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER: Job ${env.JOB_NAME}!",
-                     to: "coki.gray@gmail.com",
+                     subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER",
                      attachmentsPattern: 'generatedFile.txt',
                      attachLog: true
+                     to: "$EMAIL_TEAM",
         }
         fixed {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                     subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER: Job ${env.JOB_NAME}!",
-                     to: "windyriey@gmail.com"
+                     subject: "Fixed Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER",
+                     to: "$EMAIL_TEAM"
+        }
+
+        aborted {
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n Pipeline: ${env.BUILD_URL} has been well executed",
+                     recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                     subject: "Jenkins Build ${currentBuild.currentResult} # $env.BUILD_NUMBER",
+                     to: "$EMAIL_ADMIN"
         }
     }
 }
