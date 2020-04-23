@@ -67,8 +67,8 @@ pipeline {
                 sh 'docker-compose -f $DEV_DIR/$DOC_COMPOSE up -d --build'
             }
         }
-
-        stage('PublishToDockerHub') {
+        stage('Publish Artifacts') {
+            stages {
                 stage('Publish Latest') {
                     steps {
                       sh 'echo "Publish to Docker Hub"'
