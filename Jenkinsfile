@@ -29,6 +29,20 @@ pipeline {
             }
         }
 
+        stage('PromoteToDevelop') {
+            steps {
+                sh 'echo "Deploying to develop"'
+                sh 'docker-compose down'
+                sh 'docker-compose up -d --build'
+            }
+        }
+
+        stage('Acceptance Tests') {
+            steps {
+                sh 'echo "Run Acceptance tests"'
+            }
+        }
+
         stage('PublishArtifacts') {
             stages {
                 stage('Publish Release Artifacts') {
@@ -55,13 +69,6 @@ pipeline {
             }
         }
 
-        stage('PromoteToDevelop') {
-            steps {
-                sh 'echo "Deploying to develop"'
-                sh 'docker-compose down'
-                sh 'docker-compose up -d --build'
-            }
-        }
         stage('PublishToDockerHub') {
             stages {
                 stage('Publish Latest') {
