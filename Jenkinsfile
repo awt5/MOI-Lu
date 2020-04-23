@@ -1,8 +1,11 @@
 pipeline {
     agent any
+
     environment {
+        EMAIL_ME = 'luceroqpdb@gmail.com'
         BUILD_VERSION = "1.0.$env.BUILD_NUMBER"
     }
+
     stages {
         stage('Build') {
             steps {
@@ -117,14 +120,13 @@ pipeline {
             }
         }
     }
-    environment {
-        EMAIL_ME = 'luceroqpdb@gmail.com'
-    }
+
     post {
         always {
             junit 'build/test-results/**/*.xml'
         }
         aborted {
+            sh 'echo Aborted'
         }
         failure {
             emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n Pipeline: ${env.BUILD_URL} has been well executed",
@@ -132,6 +134,7 @@ pipeline {
                  subject: "Jenkins Build ${currentBuild.currentResult} # {$env.BUILD_NUMBER}: Job ${env.JOB_NAME}!"
         }
         fixed {
+            sh 'echo Fixed'
         }
     }
 }
