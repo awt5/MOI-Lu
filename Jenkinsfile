@@ -64,7 +64,7 @@ pipeline {
                     }
                     steps{
                         sh 'echo "Publish to artifactory when develop"'
-                        sh './gradlew -Prelease_version=1.0-SNAPSHOT artifactoryPublish'
+                        sh './gradlew artifactoryPublish'
                     }
                 }
             }
