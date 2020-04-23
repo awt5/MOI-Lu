@@ -94,9 +94,10 @@ pipeline {
 
         stage('Deploy to QA') {
             environment {
-                QA_DIR = '/deployments/qa'
-                DC_DIR = './docker/compose'
                 DOC_COMPOSE = 'docker-compose-go.yml'
+                DC_DIR = './docker/compose'
+                QA_DIR = '/deployments/qa'
+                ENV_DIR = 'env/qa.env'
             }
             when {
                 anyOf {
@@ -108,7 +109,7 @@ pipeline {
             steps {
                 sh 'echo "Deploying to QA"'
                 sh 'cp $DC_DIR/$DOC_COMPOSE $QA_DIR'
-                sh 'cp $DC_DIR/env/qa.env $QA_DIR'
+                sh 'cp $DC_DIR/$ENV_DIR $QA_DIR/.env'
                 sh 'ls -la $QA_DIR'
                 sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE down'
                 sh 'docker-compose -f $QA_DIR/$DOC_COMPOSE up -d'
