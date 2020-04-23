@@ -55,15 +55,10 @@ pipeline {
         }
 
         stage('PromoteToDevelop') {
-            environment {
-                DC_DIR = 'docker/compose'
-                DOC_COMPOSE = 'docker-compose.yml'
-            }
             steps {
                 sh 'echo "Deploying to develop"'
-                sh 'ls $DC_DIR'
-                sh 'docker-compose -f $DC_DIR/$DOC_COMPOSE down'
-                sh 'docker-compose -f $DC_DIR/$DOC_COMPOSE up -d --build'
+                sh 'docker-compose down'
+                sh 'docker-compose up -d --build'
             }
         }
         stage('PublishToDockerHub') {
