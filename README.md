@@ -1,4 +1,4 @@
-# MOI
+# MOI Demo
 
 Multilanguage Online IDE was created to write code wherever you are
 
